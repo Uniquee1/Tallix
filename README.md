@@ -1,1 +1,457 @@
-# Tallix
+Tallix
+
+Tallix is a simple personal lending and borrowing ledger that helps users keep track of who owes them and who they owe.
+
+It provides a web application and mobile application backed by a shared API and cloud infrastructure.
+
+Tallix is designed as a portfolio-quality software engineering project demonstrating modern full-stack development, mobile development, Azure cloud infrastructure, DevOps, automated testing, Infrastructure as Code, security, and observability.
+
+«Tallix is a personal record-keeping application. It is not intended to function as a regulated lending, banking, accounting, or financial institution platform.»
+
+---
+
+Features
+
+Personal Ledger
+
+- Record money lent to someone
+- Record money borrowed from someone
+- Record partial payments
+- Track outstanding balances
+- View complete transaction history
+- Add notes and descriptions
+- Set optional due dates
+- Correct or reverse transactions
+
+Contacts
+
+- Create and manage contacts
+- View all transactions associated with a contact
+- See whether a contact owes you or you owe them
+- View current outstanding balance
+
+Dashboard
+
+The dashboard provides a quick overview of:
+
+- Total owed to you
+- Total you owe
+- Net balance
+- Overdue entries
+- Upcoming due dates
+- Recent transactions
+
+Authentication
+
+- Secure user authentication
+- User-specific data isolation
+- API authorization
+- External identity provider integration
+
+Web Application
+
+- Responsive web interface
+- Dashboard
+- Contact management
+- Ledger management
+- Transaction history
+- Search and filtering
+
+Mobile Application
+
+- Android/iOS support
+- Shared backend API
+- Mobile-friendly ledger management
+- Transaction recording
+- Balance and history views
+- Push notifications in a future release
+
+---
+
+Technology Stack
+
+Web
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- TanStack Query
+- Playwright
+
+Mobile
+
+- React Native
+- Expo
+- TypeScript
+
+Backend
+
+- ASP.NET Core Web API
+- C#
+- Entity Framework Core
+- PostgreSQL
+- OpenAPI/Swagger
+
+Cloud
+
+- Microsoft Azure
+- Azure Container Apps
+- Azure Database for PostgreSQL
+- Azure Blob Storage
+- Azure Key Vault
+- Azure Container Registry
+- Azure Application Insights
+- Azure Monitor
+
+DevOps
+
+- GitHub
+- GitHub Actions
+- Docker
+- Terraform
+- Automated testing
+- Dependency/security scanning
+- CI/CD
+- Infrastructure as Code
+
+---
+
+Architecture
+
+Tallix uses a modular monolith architecture.
+
+                    ┌─────────────────────┐
+                    │     Web Client      │
+                    │ Next.js / React / TS│
+                    └──────────┬──────────┘
+                               │
+                               │ HTTPS
+                               │
+                    ┌──────────▼──────────┐
+                    │     ASP.NET Core    │
+                    │      Web API        │
+                    │                     │
+                    │  Modular Monolith   │
+                    └──────┬─────┬────────┘
+                           │     │
+                ┌──────────┘     └──────────┐
+                ▼                           ▼
+       ┌─────────────────┐         ┌─────────────────┐
+       │   PostgreSQL    │         │ Azure Blob      │
+       │                 │         │ Storage         │
+       └─────────────────┘         └─────────────────┘
+
+                    ▲
+                    │ HTTPS
+                    │
+          ┌─────────┴──────────┐
+          │ React Native / Expo│
+          │    Mobile App      │
+          └────────────────────┘
+
+Infrastructure and deployment are managed through Terraform and GitHub Actions.
+
+---
+
+Repository Structure
+
+tallix/
+│
+├── apps/
+│   ├── web/
+│   │   └── Next.js application
+│   │
+│   └── mobile/
+│       └── React Native / Expo application
+│
+├── services/
+│   └── api/
+│       ├── Tallix.Api/
+│       ├── Tallix.Application/
+│       ├── Tallix.Domain/
+│       └── Tallix.Infrastructure/
+│
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   └── e2e/
+│
+├── infra/
+│   └── terraform/
+│
+├── docs/
+│   ├── architecture.md
+│   ├── requirements.md
+│   └── plan.md
+│
+├── .github/
+│   └── workflows/
+│
+├── docker/
+│
+├── README.md
+├── requirements.md
+├── architecture.md
+└── plan.md
+
+---
+
+Core Domain Concept
+
+Tallix is based on a transaction ledger rather than a manually maintained balance.
+
+For example:
+
+Juan Santos
+
+Oct 01    Lent              +₱5,000
+Oct 05    Payment Received  -₱1,000
+Oct 10    Lent              +₱2,000
+-------------------------------------
+Balance                      ₱6,000
+
+The balance is derived from ledger transactions.
+
+This provides:
+
+- Auditability
+- Transaction history
+- Easier corrections
+- Partial payments
+- Multiple transactions with the same person
+- Reduced risk of inconsistent balances
+
+---
+
+Transaction Types
+
+The initial transaction types are:
+
+LENT
+BORROWED
+PAYMENT_RECEIVED
+PAYMENT_MADE
+ADJUSTMENT
+
+The transaction direction is interpreted relative to the current user.
+
+LENT
+    → increases amount owed to the user
+
+PAYMENT_RECEIVED
+    → decreases amount owed to the user
+
+BORROWED
+    → increases amount owed by the user
+
+PAYMENT_MADE
+    → decreases amount owed by the user
+
+---
+
+Local Development
+
+Prerequisites
+
+Install:
+
+- Git
+- .NET SDK
+- Node.js
+- Docker
+- Docker Compose
+- PostgreSQL client (optional)
+- Expo development tooling
+
+Terraform is required for infrastructure work.
+
+---
+
+Clone
+
+git clone <repository-url>
+cd tallix
+
+---
+
+Start Local Infrastructure
+
+docker compose up -d
+
+This starts local dependencies such as PostgreSQL.
+
+---
+
+Run API
+
+cd services/api
+dotnet restore
+dotnet run
+
+---
+
+Run Web Application
+
+cd apps/web
+npm install
+npm run dev
+
+---
+
+Run Mobile Application
+
+cd apps/mobile
+npm install
+npx expo start
+
+---
+
+Testing
+
+Run backend tests:
+
+dotnet test
+
+Run frontend tests:
+
+npm test
+
+Run end-to-end tests:
+
+npx playwright test
+
+---
+
+Development Workflow
+
+Tallix follows a pull-request-based workflow.
+
+feature/*
+     │
+     ▼
+Pull Request
+     │
+     ├── Build
+     ├── Unit tests
+     ├── Integration tests
+     ├── Lint
+     ├── Security checks
+     └── Docker build
+     │
+     ▼
+Code Review
+     │
+     ▼
+main
+     │
+     ▼
+CI/CD
+     │
+     ▼
+Staging
+     │
+     ▼
+Production
+
+---
+
+Infrastructure
+
+Infrastructure is defined using Terraform.
+
+Major Azure resources include:
+
+- Resource Group
+- Azure Container Apps
+- Azure Container Registry
+- Azure Database for PostgreSQL
+- Azure Blob Storage
+- Azure Key Vault
+- Application Insights
+- Log Analytics
+
+The goal is for the environment to be reproducible rather than manually configured through the Azure Portal.
+
+---
+
+Security Principles
+
+Tallix follows these principles:
+
+- No secrets committed to Git
+- HTTPS-only communication
+- External identity provider for authentication
+- Authorization at API boundaries
+- Per-user data isolation
+- Private storage for uploaded files
+- Managed identities where possible
+- Secrets stored in Azure Key Vault
+- Input validation
+- Database parameterization through EF Core
+- Dependency vulnerability scanning
+- Audit-friendly transaction model
+
+---
+
+Observability
+
+Production services should provide:
+
+- Application logs
+- Request metrics
+- Error tracking
+- Dependency tracking
+- Response-time metrics
+- Availability monitoring
+
+Azure Application Insights and Azure Monitor are used for centralized observability.
+
+---
+
+Project Goals
+
+Tallix is intended to demonstrate practical experience with:
+
+- Full-stack application development
+- REST API design
+- Relational database design
+- Domain modeling
+- React/Next.js
+- React Native
+- C#
+- ASP.NET Core
+- PostgreSQL
+- Docker
+- Azure
+- Terraform
+- GitHub Actions
+- Automated testing
+- CI/CD
+- Security
+- Monitoring and observability
+
+---
+
+Non-Goals
+
+The following are intentionally outside the initial scope:
+
+- Banking
+- Credit scoring
+- Loan underwriting
+- Automated loan approval
+- Payment processing
+- Bank account integration
+- Cryptocurrency
+- Complex accounting
+- Multi-institution lending
+- Regulated financial services
+
+These may be considered only as future experiments.
+
+---
+
+License
+
+License: TBD
