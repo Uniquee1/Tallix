@@ -1,18 +1,18 @@
-Tallix
+# Tallix
 
-Tallix is a simple personal lending and borrowing ledger that helps users keep track of who owes them and who they owe.
+**Tallix** is a simple personal lending and borrowing ledger that helps users keep track of who owes them and who they owe.
 
 It provides a web application and mobile application backed by a shared API and cloud infrastructure.
 
 Tallix is designed as a portfolio-quality software engineering project demonstrating modern full-stack development, mobile development, Azure cloud infrastructure, DevOps, automated testing, Infrastructure as Code, security, and observability.
 
-«Tallix is a personal record-keeping application. It is not intended to function as a regulated lending, banking, accounting, or financial institution platform.»
+> Tallix is a personal record-keeping application. It is not intended to function as a regulated lending, banking, accounting, or financial institution platform.
 
 ---
 
-Features
+## Features
 
-Personal Ledger
+### Personal Ledger
 
 - Record money lent to someone
 - Record money borrowed from someone
@@ -23,14 +23,14 @@ Personal Ledger
 - Set optional due dates
 - Correct or reverse transactions
 
-Contacts
+### Contacts
 
 - Create and manage contacts
 - View all transactions associated with a contact
 - See whether a contact owes you or you owe them
 - View current outstanding balance
 
-Dashboard
+### Dashboard
 
 The dashboard provides a quick overview of:
 
@@ -41,14 +41,14 @@ The dashboard provides a quick overview of:
 - Upcoming due dates
 - Recent transactions
 
-Authentication
+### Authentication
 
 - Secure user authentication
 - User-specific data isolation
 - API authorization
 - External identity provider integration
 
-Web Application
+### Web Application
 
 - Responsive web interface
 - Dashboard
@@ -57,7 +57,7 @@ Web Application
 - Transaction history
 - Search and filtering
 
-Mobile Application
+### Mobile Application
 
 - Android/iOS support
 - Shared backend API
@@ -68,9 +68,9 @@ Mobile Application
 
 ---
 
-Technology Stack
+# Technology Stack
 
-Web
+## Web
 
 - Next.js
 - React
@@ -79,13 +79,13 @@ Web
 - TanStack Query
 - Playwright
 
-Mobile
+## Mobile
 
 - React Native
 - Expo
 - TypeScript
 
-Backend
+## Backend
 
 - ASP.NET Core Web API
 - C#
@@ -93,7 +93,7 @@ Backend
 - PostgreSQL
 - OpenAPI/Swagger
 
-Cloud
+## Cloud
 
 - Microsoft Azure
 - Azure Container Apps
@@ -104,7 +104,7 @@ Cloud
 - Azure Application Insights
 - Azure Monitor
 
-DevOps
+## DevOps
 
 - GitHub
 - GitHub Actions
@@ -117,99 +117,108 @@ DevOps
 
 ---
 
-Architecture
+# Architecture
 
-Tallix uses a modular monolith architecture.
+Tallix uses a **modular monolith** architecture.
 
-                    ┌─────────────────────┐
-                    │     Web Client      │
-                    │ Next.js / React / TS│
-                    └──────────┬──────────┘
-                               │
-                               │ HTTPS
-                               │
-                    ┌──────────▼──────────┐
-                    │     ASP.NET Core    │
-                    │      Web API        │
-                    │                     │
-                    │  Modular Monolith   │
-                    └──────┬─────┬────────┘
-                           │     │
-                ┌──────────┘     └──────────┐
-                ▼                           ▼
-       ┌─────────────────┐         ┌─────────────────┐
-       │   PostgreSQL    │         │ Azure Blob      │
-       │                 │         │ Storage         │
-       └─────────────────┘         └─────────────────┘
+```text
+                    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+                    â”‚     Web Client      â”‚
+                    â”‚ Next.js / React / TSâ”‚
+                    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                               â”‚
+                               â”‚ HTTPS
+                               â”‚
+                    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+                    â”‚     ASP.NET Core    â”‚
+                    â”‚      Web API        â”‚
+                    â”‚                     â”‚
+                    â”‚  Modular Monolith   â”‚
+                    â””â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                           â”‚     â”‚
+                â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜     â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+                â–¼                           â–¼
+       â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”         â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+       â”‚   PostgreSQL    â”‚         â”‚ Azure Blob      â”‚
+       â”‚                 â”‚         â”‚ Storage         â”‚
+       â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜         â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 
-                    ▲
-                    │ HTTPS
-                    │
-          ┌─────────┴──────────┐
-          │ React Native / Expo│
-          │    Mobile App      │
-          └────────────────────┘
+                    â–²
+                    â”‚ HTTPS
+                    â”‚
+          â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+          â”‚ React Native / Expoâ”‚
+          â”‚    Mobile App      â”‚
+          â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+
+```
 
 Infrastructure and deployment are managed through Terraform and GitHub Actions.
 
 ---
 
-Repository Structure
+# Repository Structure
 
+```text
 tallix/
-│
-├── apps/
-│   ├── web/
-│   │   └── Next.js application
-│   │
-│   └── mobile/
-│       └── React Native / Expo application
-│
-├── services/
-│   └── api/
-│       ├── Tallix.Api/
-│       ├── Tallix.Application/
-│       ├── Tallix.Domain/
-│       └── Tallix.Infrastructure/
-│
-├── tests/
-│   ├── unit/
-│   ├── integration/
-│   └── e2e/
-│
-├── infra/
-│   └── terraform/
-│
-├── docs/
-│   ├── architecture.md
-│   ├── requirements.md
-│   └── plan.md
-│
-├── .github/
-│   └── workflows/
-│
-├── docker/
-│
-├── README.md
-├── requirements.md
-├── architecture.md
-└── plan.md
+â”‚
+â”œâ”€â”€ apps/
+â”‚   â”œâ”€â”€ web/
+â”‚   â”‚   â””â”€â”€ Next.js application
+â”‚   â”‚
+â”‚   â””â”€â”€ mobile/
+â”‚       â””â”€â”€ React Native / Expo application
+â”‚
+â”œâ”€â”€ services/
+â”‚   â””â”€â”€ api/
+â”‚       â”œâ”€â”€ Tallix.Api/
+â”‚       â”œâ”€â”€ Tallix.Application/
+â”‚       â”œâ”€â”€ Tallix.Domain/
+â”‚       â””â”€â”€ Tallix.Infrastructure/
+â”‚
+â”œâ”€â”€ tests/
+â”‚   â”œâ”€â”€ unit/
+â”‚   â”œâ”€â”€ integration/
+â”‚   â””â”€â”€ e2e/
+â”‚
+â”œâ”€â”€ infra/
+â”‚   â””â”€â”€ terraform/
+â”‚
+â”œâ”€â”€ docs/
+â”‚   â”œâ”€â”€ architecture.md
+â”‚   â”œâ”€â”€ requirements.md
+â”‚   â””â”€â”€ plan.md
+â”‚
+â”œâ”€â”€ .github/
+â”‚   â””â”€â”€ workflows/
+â”‚
+â”œâ”€â”€ docker/
+â”‚
+â”œâ”€â”€ README.md
+â”œâ”€â”€ requirements.md
+â”œâ”€â”€ architecture.md
+â””â”€â”€ plan.md
+
+```
 
 ---
 
-Core Domain Concept
+# Core Domain Concept
 
 Tallix is based on a transaction ledger rather than a manually maintained balance.
 
 For example:
 
+```text
 Juan Santos
 
-Oct 01    Lent              +₱5,000
-Oct 05    Payment Received  -₱1,000
-Oct 10    Lent              +₱2,000
+Oct 01    Lent              +â‚±5,000
+Oct 05    Payment Received  -â‚±1,000
+Oct 10    Lent              +â‚±2,000
 -------------------------------------
-Balance                      ₱6,000
+Balance                      â‚±6,000
+
+```
 
 The balance is derived from ledger transactions.
 
@@ -224,35 +233,41 @@ This provides:
 
 ---
 
-Transaction Types
+# Transaction Types
 
 The initial transaction types are:
 
+```text
 LENT
 BORROWED
 PAYMENT_RECEIVED
 PAYMENT_MADE
 ADJUSTMENT
 
+```
+
 The transaction direction is interpreted relative to the current user.
 
+```text
 LENT
-    → increases amount owed to the user
+    â†’ increases amount owed to the user
 
 PAYMENT_RECEIVED
-    → decreases amount owed to the user
+    â†’ decreases amount owed to the user
 
 BORROWED
-    → increases amount owed by the user
+    â†’ increases amount owed by the user
 
 PAYMENT_MADE
-    → decreases amount owed by the user
+    â†’ decreases amount owed by the user
+
+```
 
 ---
 
-Local Development
+# Local Development
 
-Prerequisites
+## Prerequisites
 
 Install:
 
@@ -268,95 +283,122 @@ Terraform is required for infrastructure work.
 
 ---
 
-Clone
+## Clone
 
+```bash
 git clone <repository-url>
 cd tallix
 
+```
+
 ---
 
-Start Local Infrastructure
+## Start Local Infrastructure
 
+```bash
 docker compose up -d
+
+```
 
 This starts local dependencies such as PostgreSQL.
 
 ---
 
-Run API
+## Run API
 
+```bash
 cd services/api
 dotnet restore
 dotnet run
 
+```
+
 ---
 
-Run Web Application
+## Run Web Application
 
+```bash
 cd apps/web
 npm install
 npm run dev
 
+```
+
 ---
 
-Run Mobile Application
+## Run Mobile Application
 
+```bash
 cd apps/mobile
 npm install
 npx expo start
 
+```
+
 ---
 
-Testing
+# Testing
 
 Run backend tests:
 
+```bash
 dotnet test
+
+```
 
 Run frontend tests:
 
+```bash
 npm test
+
+```
 
 Run end-to-end tests:
 
+```bash
 npx playwright test
+
+```
 
 ---
 
-Development Workflow
+# Development Workflow
 
 Tallix follows a pull-request-based workflow.
 
+```text
 feature/*
-     │
-     ▼
+     â”‚
+     â–¼
 Pull Request
-     │
-     ├── Build
-     ├── Unit tests
-     ├── Integration tests
-     ├── Lint
-     ├── Security checks
-     └── Docker build
-     │
-     ▼
+     â”‚
+     â”œâ”€â”€ Build
+     â”œâ”€â”€ Unit tests
+     â”œâ”€â”€ Integration tests
+     â”œâ”€â”€ Lint
+     â”œâ”€â”€ Security checks
+     â””â”€â”€ Docker build
+     â”‚
+     â–¼
 Code Review
-     │
-     ▼
+     â”‚
+     â–¼
 main
-     │
-     ▼
+     â”‚
+     â–¼
 CI/CD
-     │
-     ▼
+     â”‚
+     â–¼
 Staging
-     │
-     ▼
+     â”‚
+     â–¼
 Production
+
+```
 
 ---
 
-Infrastructure
+# Infrastructure
 
 Infrastructure is defined using Terraform.
 
@@ -375,7 +417,7 @@ The goal is for the environment to be reproducible rather than manually configur
 
 ---
 
-Security Principles
+# Security Principles
 
 Tallix follows these principles:
 
@@ -394,7 +436,7 @@ Tallix follows these principles:
 
 ---
 
-Observability
+# Observability
 
 Production services should provide:
 
@@ -409,7 +451,7 @@ Azure Application Insights and Azure Monitor are used for centralized observabil
 
 ---
 
-Project Goals
+# Project Goals
 
 Tallix is intended to demonstrate practical experience with:
 
@@ -433,7 +475,7 @@ Tallix is intended to demonstrate practical experience with:
 
 ---
 
-Non-Goals
+# Non-Goals
 
 The following are intentionally outside the initial scope:
 
@@ -452,6 +494,6 @@ These may be considered only as future experiments.
 
 ---
 
-License
+# License
 
 License: TBD
