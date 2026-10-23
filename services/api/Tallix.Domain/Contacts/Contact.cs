@@ -14,6 +14,11 @@ public class Contact
     public string? Notes { get; }
     public DateTimeOffset CreatedAt { get; }
 
+    private Contact()
+    {
+        Name = null!;
+    }
+
     private Contact(
         Guid id, Guid userId, string name,
         string? phone, string? email, string? notes,
