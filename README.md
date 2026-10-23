@@ -185,6 +185,7 @@ tallix/
 │
 ├── docs/
 │   ├── architecture.md
+│   ├── instructions.md
 │   ├── requirements.md
 │   └── plan.md
 │
@@ -193,10 +194,7 @@ tallix/
 │
 ├── docker/
 │
-├── README.md
-├── requirements.md
-├── architecture.md
-└── plan.md
+└──  README.md
 ```
 
 ---

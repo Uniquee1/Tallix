@@ -1,0 +1,46 @@
+# ---------- Secrets & environment ----------
+.env
+.env.*
+!.env.example
+*.pfx
+*.pem
+secrets.json
+
+# ---------- OS / editor ----------
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+
+# ---------- .NET ----------
+bin/
+obj/
+*.user
+*.suo
+.vs/
+TestResults/
+*.log
+
+# ---------- Node / Next.js / Expo ----------
+node_modules/
+.next/
+out/
+dist/
+.expo/
+.expo-shared/
+web-build/
+npm-debug.log*
+coverage/
+playwright-report/
+test-results/
+
+# ---------- Terraform ----------
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+!example.tfvars
+.terraform.lock.hcl.bak
