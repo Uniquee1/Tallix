@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Tallix.Api/Tallix.Api.csproj" />
+  <Project Path="Tallix.Application/Tallix.Application.csproj" />
+  <Project Path="Tallix.Domain/Tallix.Domain.csproj" />
+  <Project Path="Tallix.Infrastructure/Tallix.Infrastructure.csproj" />
+</Solution>
