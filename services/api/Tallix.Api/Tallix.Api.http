@@ -1,0 +1,6 @@
+@Tallix.Api_HostAddress = http://localhost:5197
+
+GET {{Tallix.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
