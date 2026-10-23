@@ -16,6 +16,10 @@ public class LedgerEntry
     public DateOnly? DueDate { get; }
     public DateTimeOffset CreatedAt { get; }
 
+    private LedgerEntry()
+    {
+    }
+    
     private LedgerEntry(
         Guid id, Guid userId, Guid contactId, TransactionType type,
         Money amount, string? description, DateTimeOffset occurredAt,
