@@ -480,4 +480,4 @@ These may be considered only as future experiments.
 
 # License
 
-License: TBD
+License: MIT
