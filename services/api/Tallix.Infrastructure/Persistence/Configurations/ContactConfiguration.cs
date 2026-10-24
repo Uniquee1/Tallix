@@ -16,10 +16,11 @@ internal sealed class ContactConfiguration : IEntityTypeConfiguration<Contact>
         builder.Property(c => c.Id).HasColumnName("id").ValueGeneratedNever();
         builder.Property(c => c.UserId).HasColumnName("user_id");
         builder.Property(c => c.Name).HasColumnName("name").HasMaxLength(Contact.MaxNameLength);
-        builder.Property(c => c.Phone).HasColumnName("phone").HasMaxLength(50);
-        builder.Property(c => c.Email).HasColumnName("email").HasMaxLength(320);
-        builder.Property(c => c.Notes).HasColumnName("notes").HasMaxLength(2000);
+        builder.Property(c => c.Phone).HasColumnName("phone").HasMaxLength(Contact.MaxPhoneLength);
+        builder.Property(c => c.Email).HasColumnName("email").HasMaxLength(Contact.MaxEmailLength);
+        builder.Property(c => c.Notes).HasColumnName("notes").HasMaxLength(Contact.MaxNotesLength);
         builder.Property(c => c.CreatedAt).HasColumnName("created_at");
+        builder.Property(c => c.UpdatedAt).HasColumnName("updated_at");
 
         builder.HasOne<User>()
             .WithMany()
