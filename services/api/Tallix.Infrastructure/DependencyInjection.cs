@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Tallix.Application.Users;
 using Tallix.Infrastructure.Persistence;
 
 namespace Tallix.Infrastructure;
@@ -12,6 +13,8 @@ public static class DependencyInjection
     {
         services.AddDbContext<TallixDbContext>(options =>
             options.UseNpgsql(connectionString));
+
+        services.AddScoped<IUserRepository, UserRepository>();
 
         return services;
     }
