@@ -44,3 +44,6 @@ crash.log
 *.tfvars
 !example.tfvars
 .terraform.lock.hcl.bak
+
+# ---------- Throwaway work files (tokens, notes, experiments) ----------
+scratch/
