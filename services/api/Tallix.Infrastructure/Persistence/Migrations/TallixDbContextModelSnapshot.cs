@@ -144,6 +144,12 @@ namespace Tallix.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<string>("AuthSubject")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("auth_subject");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
@@ -162,6 +168,10 @@ namespace Tallix.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_users");
+
+                    b.HasIndex("AuthSubject")
+                        .IsUnique()
+                        .HasDatabaseName("ux_users_auth_subject");
 
                     b.HasIndex("Email")
                         .IsUnique()
