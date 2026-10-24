@@ -33,6 +33,9 @@ builder.Services.AddScoped<GetOrCreateCurrentUser>();
 builder.Services.AddScoped<ICurrentUser, HttpContextCurrentUser>();
 builder.Services.AddScoped<CreateContact>();
 builder.Services.AddScoped<GetContact>();
+builder.Services.AddScoped<ListContacts>();
+builder.Services.AddScoped<UpdateContact>();
+builder.Services.AddScoped<DeleteContact>();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
