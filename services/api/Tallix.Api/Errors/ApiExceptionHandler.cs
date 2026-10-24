@@ -27,11 +27,23 @@ internal sealed class ApiExceptionHandler : IExceptionHandler
                 Title = "Validation failed",
                 Detail = exception.Message
             },
+            NotFoundException => new ProblemDetails
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = "Not found",
+                Detail = exception.Message
+            },
             ConflictException => new ProblemDetails
             {
                 Status = StatusCodes.Status409Conflict,
                 Title = "Conflict",
                 Detail = exception.Message
+            },
+            UnauthorizedAccessException => new ProblemDetails
+            {
+                Status = StatusCodes.Status401Unauthorized,
+                Title = "Unauthorized",
+                Detail = "The request could not be authenticated."
             },
             _ => null
         };

@@ -9,31 +9,16 @@ namespace Tallix.Api.Controllers;
 [Authorize]
 public class MeController : ControllerBase
 {
-    // Must match the namespace used by the Auth0 Action. It is only an identifier.
-    private const string ClaimNamespace = "https://api.tallix.dev/";
+    private readonly ICurrentUser _currentUser;
 
-    private readonly GetOrCreateCurrentUser _getOrCreateCurrentUser;
-
-    public MeController(GetOrCreateCurrentUser getOrCreateCurrentUser)
+    public MeController(ICurrentUser currentUser)
     {
-        _getOrCreateCurrentUser = getOrCreateCurrentUser;
+        _currentUser = currentUser;
     }
 
     [HttpGet]
     public async Task<ActionResult<UserDto>> Get(CancellationToken cancellationToken)
     {
-        var subject = User.FindFirst("sub")?.Value;
-
-        if (string.IsNullOrWhiteSpace(subject))
-            return Unauthorized();
-
-        var request = new CurrentUserRequest(
-            subject,
-            User.FindFirst(ClaimNamespace + "email")?.Value,
-            User.FindFirst(ClaimNamespace + "name")?.Value);
-
-        var user = await _getOrCreateCurrentUser.ExecuteAsync(request, cancellationToken);
-
-        return Ok(user);
+        return Ok(await _currentUser.GetAsync(cancellationToken));
     }
 }

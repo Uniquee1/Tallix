@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Tallix.Application.Contacts;
 using Tallix.Application.Users;
 using Tallix.Infrastructure.Persistence;
 
@@ -15,6 +16,7 @@ public static class DependencyInjection
             options.UseNpgsql(connectionString));
 
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IContactRepository, ContactRepository>();
 
         return services;
     }

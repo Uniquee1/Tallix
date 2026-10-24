@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Tallix.Api.Auth;
 using Tallix.Api.Errors;
+using Tallix.Application.Contacts;
 using Tallix.Application.Users;
 using Tallix.Infrastructure;
 
@@ -25,7 +27,12 @@ builder.Services.AddInfrastructure(connectionString);
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddScoped<GetOrCreateCurrentUser>();
+builder.Services.AddScoped<ICurrentUser, HttpContextCurrentUser>();
+builder.Services.AddScoped<CreateContact>();
+builder.Services.AddScoped<GetContact>();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
