@@ -1,7 +1,10 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Tallix.Api.Auth;
 using Tallix.Api.Errors;
 using Tallix.Application.Contacts;
+using Tallix.Application.Ledger;
 using Tallix.Application.Users;
 using Tallix.Infrastructure;
 
@@ -19,7 +22,16 @@ var authAudience = builder.Configuration["AUTH_AUDIENCE"]
     ?? throw new InvalidOperationException(
         "The AUTH_AUDIENCE environment variable is not set.");
 
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Enums travel as text in the form the requirements use (LENT, PAYMENT_RECEIVED),
+        // never as numbers.
+        options.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseUpper, allowIntegerValues: false));
+    });
+
 builder.Services.AddOpenApi();
 builder.Services.AddHealthChecks();
 builder.Services.AddInfrastructure(connectionString);
@@ -36,6 +48,8 @@ builder.Services.AddScoped<GetContact>();
 builder.Services.AddScoped<ListContacts>();
 builder.Services.AddScoped<UpdateContact>();
 builder.Services.AddScoped<DeleteContact>();
+builder.Services.AddScoped<RecordLedgerEntry>();
+builder.Services.AddScoped<GetLedgerEntry>();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
