@@ -121,6 +121,9 @@ public class LedgerEntry
 
         if (contactId == Guid.Empty)
             throw new DomainException("A ledger entry must belong to a contact.");
+        
+        if (!Enum.IsDefined(type))
+            throw new DomainException($"Unknown transaction type: {type}.");
 
         if (type == TransactionType.Adjustment)
         {
