@@ -19,6 +19,13 @@ internal sealed class ContactRepository : IContactRepository
             .AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == contactId && c.UserId == userId, cancellationToken);
 
+    public async Task<IReadOnlyList<Contact>> ListAllAsync(
+        Guid userId, CancellationToken cancellationToken) =>
+        await _db.Contacts
+            .AsNoTracking()
+            .Where(c => c.UserId == userId)
+            .ToListAsync(cancellationToken);
+
     public async Task<ContactPage> ListAsync(
         Guid userId, string? search, int skip, int take, CancellationToken cancellationToken)
     {

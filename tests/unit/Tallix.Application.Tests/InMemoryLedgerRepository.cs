@@ -26,6 +26,9 @@ internal sealed class InMemoryLedgerRepository : ILedgerRepository
         Task.FromResult<IReadOnlyList<LedgerEntry>>(
             _entries.Where(e => e.UserId == userId && e.ContactId == contactId).ToList());
 
+    public Task<IReadOnlyList<LedgerEntry>> ListByUserAsync(Guid userId, CancellationToken cancellationToken) =>
+        Task.FromResult<IReadOnlyList<LedgerEntry>>(_entries.Where(e => e.UserId == userId).ToList());
+
     public Task<bool> TryAddAsync(LedgerEntry entry, CancellationToken cancellationToken)
     {
         if (RejectNextAdd)

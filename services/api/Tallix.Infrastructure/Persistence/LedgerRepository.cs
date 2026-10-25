@@ -29,6 +29,13 @@ internal sealed class LedgerRepository : ILedgerRepository
             .Where(e => e.UserId == userId && e.ContactId == contactId)
             .ToListAsync(cancellationToken);
 
+    public async Task<IReadOnlyList<LedgerEntry>> ListByUserAsync(
+        Guid userId, CancellationToken cancellationToken) =>
+        await _db.LedgerEntries
+            .AsNoTracking()
+            .Where(e => e.UserId == userId)
+            .ToListAsync(cancellationToken);
+
     public async Task<bool> TryAddAsync(LedgerEntry entry, CancellationToken cancellationToken)
     {
         _db.LedgerEntries.Add(entry);

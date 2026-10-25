@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Tallix.Api.Auth;
 using Tallix.Api.Errors;
 using Tallix.Application.Contacts;
+using Tallix.Application.Dashboard;
 using Tallix.Application.Ledger;
 using Tallix.Application.Users;
 using Tallix.Infrastructure;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +54,7 @@ builder.Services.AddScoped<RecordLedgerEntry>();
 builder.Services.AddScoped<GetLedgerEntry>();
 builder.Services.AddScoped<GetContactLedger>();
 builder.Services.AddScoped<ReverseLedgerEntry>();
+builder.Services.AddScoped<GetDashboard>();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
