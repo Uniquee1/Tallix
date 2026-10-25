@@ -43,9 +43,11 @@ internal sealed class LedgerEntryConfiguration : IEntityTypeConfiguration<Ledger
         builder.Property(e => e.OccurredAt).HasColumnName("occurred_at");
         builder.Property(e => e.DueDate).HasColumnName("due_date");
         builder.Property(e => e.CreatedAt).HasColumnName("created_at");
+        builder.Property(e => e.ReversesEntryId).HasColumnName("reverses_entry_id");
 
         // Computed in C#, never stored.
         builder.Ignore(e => e.SignedAmount);
+        builder.Ignore(e => e.IsReversal);
 
         builder.HasOne<User>()
             .WithMany()
@@ -59,9 +61,22 @@ internal sealed class LedgerEntryConfiguration : IEntityTypeConfiguration<Ledger
             .HasConstraintName("fk_ledger_entries_contacts")
             .OnDelete(DeleteBehavior.Restrict);
 
+        // A table pointing at itself: a reversal references the entry it reverses.
+        builder.HasOne<LedgerEntry>()
+            .WithMany()
+            .HasForeignKey(e => e.ReversesEntryId)
+            .HasConstraintName("fk_ledger_entries_reverses_entry")
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasIndex(e => e.UserId).HasDatabaseName("ix_ledger_entries_user_id");
         builder.HasIndex(e => e.ContactId).HasDatabaseName("ix_ledger_entries_contact_id");
         builder.HasIndex(e => e.OccurredAt).HasDatabaseName("ix_ledger_entries_occurred_at");
         builder.HasIndex(e => e.DueDate).HasDatabaseName("ix_ledger_entries_due_date");
+
+        // At most one reversal per entry. PostgreSQL treats NULLs as distinct in a
+        // unique index, so the many entries that reverse nothing don't collide.
+        builder.HasIndex(e => e.ReversesEntryId)
+            .IsUnique()
+            .HasDatabaseName("ux_ledger_entries_reverses_entry_id");
     }
 }

@@ -98,6 +98,10 @@ namespace Tallix.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("occurred_at");
 
+                    b.Property<Guid?>("ReversesEntryId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("reverses_entry_id");
+
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(30)
@@ -135,6 +139,10 @@ namespace Tallix.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("OccurredAt")
                         .HasDatabaseName("ix_ledger_entries_occurred_at");
+
+                    b.HasIndex("ReversesEntryId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_ledger_entries_reverses_entry_id");
 
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_ledger_entries_user_id");
@@ -202,6 +210,12 @@ namespace Tallix.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_ledger_entries_contacts");
+
+                    b.HasOne("Tallix.Domain.Ledger.LedgerEntry", null)
+                        .WithMany()
+                        .HasForeignKey("ReversesEntryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_ledger_entries_reverses_entry");
 
                     b.HasOne("Tallix.Domain.Users.User", null)
                         .WithMany()

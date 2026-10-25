@@ -98,7 +98,6 @@ Each entry shall contain:
 * Optional due date
 * Description
 * Created timestamp
-* Updated timestamp
 
 Supported transaction types:
 
@@ -109,6 +108,8 @@ PAYMENT_RECEIVED
 PAYMENT_MADE
 ADJUSTMENT
 ```
+
+Ledger entries are immutable once posted. There is no edit operation. Mistakes are corrected by reversing the entry and recording a new one (see FR-009).
 
 The mobile application shall allow ledger entries to be created while offline.
 
@@ -197,6 +198,7 @@ A reversed transaction must remain traceable.
 
 Offline-created corrections shall be synchronized when connectivity is restored.
 
+A reversal is recorded as a new ADJUSTMENT entry whose amount is the exact opposite of the original entry's effect on the balance, and which links back to the original. An entry can be reversed at most once, and a reversal cannot itself be reversed.
 ---
 
 # FR-010 Due Dates
