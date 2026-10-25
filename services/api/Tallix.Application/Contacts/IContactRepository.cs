@@ -19,6 +19,11 @@ public interface IContactRepository
     Task<ContactPage> ListAsync(
         Guid userId, string? search, int skip, int take, CancellationToken cancellationToken);
 
+    /// <summary>
+    /// All of the user's contacts, with no paging. Used where every name is needed.
+    /// </summary>
+    Task<IReadOnlyList<Contact>> ListAllAsync(Guid userId, CancellationToken cancellationToken);
+
     Task AddAsync(Contact contact, CancellationToken cancellationToken);
 
     /// <summary>

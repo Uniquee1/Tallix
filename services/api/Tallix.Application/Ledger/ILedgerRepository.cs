@@ -18,6 +18,11 @@ public interface ILedgerRepository
         Guid userId, Guid contactId, CancellationToken cancellationToken);
 
     /// <summary>
+    /// All of the user's entries, across every contact. No particular order.
+    /// </summary>
+    Task<IReadOnlyList<LedgerEntry>> ListByUserAsync(Guid userId, CancellationToken cancellationToken);
+
+    /// <summary>
     /// Saves a new entry. Returns false (and saves nothing) if its contact no longer
     /// exists, for example because it was deleted a moment ago.
     /// </summary>

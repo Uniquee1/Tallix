@@ -22,6 +22,9 @@ internal sealed class InMemoryContactRepository : IContactRepository
     public Task<Contact?> GetByIdAsync(Guid userId, Guid contactId, CancellationToken cancellationToken) =>
         Task.FromResult(_contacts.FirstOrDefault(c => c.Id == contactId && c.UserId == userId));
 
+    public Task<IReadOnlyList<Contact>> ListAllAsync(Guid userId, CancellationToken cancellationToken) =>
+        Task.FromResult<IReadOnlyList<Contact>>(_contacts.Where(c => c.UserId == userId).ToList());
+
     public Task<ContactPage> ListAsync(
         Guid userId, string? search, int skip, int take, CancellationToken cancellationToken)
     {
