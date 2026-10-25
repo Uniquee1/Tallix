@@ -50,6 +50,8 @@ builder.Services.AddScoped<UpdateContact>();
 builder.Services.AddScoped<DeleteContact>();
 builder.Services.AddScoped<RecordLedgerEntry>();
 builder.Services.AddScoped<GetLedgerEntry>();
+builder.Services.AddScoped<GetContactLedger>();
+builder.Services.AddScoped<ReverseLedgerEntry>();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
