@@ -63,3 +63,29 @@ export type Dashboard = {
   upcoming: DashboardDueGroup;
   recentTransactions: DashboardTransaction[];
 };
+
+export type PagedResult<T> = {
+  items: T[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+};
+
+// Matches ContactDto in the API.
+export type Contact = {
+  id: string;
+  name: string;
+  phone: string | null;
+  email: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+// What we send to create or replace a contact.
+export type ContactInput = {
+  name: string;
+  phone: string | null;
+  email: string | null;
+  notes: string | null;
+};

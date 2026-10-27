@@ -1,7 +1,9 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
+import { NavLinks, NavLinksFallback } from "@/components/NavLinks";
 import { apiGet } from "@/lib/api-client";
 import type { User } from "@/types/api";
 
@@ -16,11 +18,9 @@ export function AppHeader() {
             Tallix
           </Link>
 
-          <nav className="flex gap-4 text-sm text-gray-600">
-            <Link href="/dashboard" className="hover:text-gray-900">
-              Dashboard
-            </Link>
-          </nav>
+          <Suspense fallback={<NavLinksFallback />}>
+            <NavLinks />
+          </Suspense>
         </div>
 
         <div className="flex items-center gap-4 text-sm">
