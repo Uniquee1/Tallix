@@ -22,6 +22,13 @@ export function useContacts(search: string, page: number) {
   });
 }
 
+export function useContact(id: string) {
+  return useQuery({
+    queryKey: ["contact", id],
+    queryFn: () => apiGet<Contact>(`/contacts/${encodeURIComponent(id)}`),
+  });
+}
+
 export function useCreateContact() {
   const queryClient = useQueryClient();
 
@@ -37,10 +44,11 @@ export function useUpdateContact() {
 
   return useMutation({
     mutationFn: ({ id, input }: { id: string; input: ContactInput }) =>
-      apiPut<Contact>(`/contacts/${id}`, input),
+      apiPut<Contact>(`/contacts/${encodeURIComponent(id)}`, input),
     onSuccess: () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: ["contacts"] }),
+        queryClient.invalidateQueries({ queryKey: ["contact"] }),
         // The dashboard shows contact names, so it is out of date too.
         queryClient.invalidateQueries({ queryKey: ["dashboard"] }),
       ]),
@@ -51,7 +59,7 @@ export function useDeleteContact() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string) => apiDelete(`/contacts/${id}`),
+    mutationFn: (id: string) => apiDelete(`/contacts/${encodeURIComponent(id)}`),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["contacts"] }),
   });
 }

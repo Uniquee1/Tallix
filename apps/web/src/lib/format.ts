@@ -42,3 +42,11 @@ export const transactionLabels: Record<TransactionType, string> = {
   PAYMENT_MADE: "Payment made",
   ADJUSTMENT: "Adjustment",
 };
+
+// A calendar day picked by the user becomes an instant at noon in their own time zone,
+// so the day stays the same wherever it is displayed later.
+export function localDateToInstant(isoDate: string): string {
+  const [year, month, day] = isoDate.split("-").map(Number);
+
+  return new Date(year, month - 1, day, 12, 0, 0).toISOString();
+}
