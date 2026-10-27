@@ -1,4 +1,4 @@
-import { DashboardView } from "@/components/dashboard/DashboardView";
+import { DashboardView } from "@/features/dashboard/DashboardView";
 
 export const metadata = { title: "Dashboard · Tallix" };
 
