@@ -81,3 +81,58 @@ export type Dashboard = {
   upcoming: DashboardDueGroup;
   recentTransactions: DashboardTransaction[];
 };
+
+// What we send to create or replace a contact.
+export type ContactInput = {
+  name: string;
+  phone: string | null;
+  email: string | null;
+  notes: string | null;
+};
+
+// Matches LedgerEntryDto in the API.
+export type LedgerEntry = {
+  id: string;
+  contactId: string;
+  type: TransactionType;
+  amount: number;
+  currency: "PHP";
+  signedAmount: number;
+  description: string | null;
+  occurredAt: string;
+  dueDate: string | null;
+  createdAt: string;
+  reversesEntryId: string | null;
+};
+
+// Matches LedgerHistoryItemDto: one row of a contact's history.
+export type LedgerHistoryItem = {
+  id: string;
+  type: TransactionType;
+  amount: number;
+  currency: "PHP";
+  signedAmount: number;
+  runningBalance: number;
+  description: string | null;
+  occurredAt: string;
+  dueDate: string | null;
+  createdAt: string;
+  reversesEntryId: string | null;
+  reversedByEntryId: string | null;
+};
+
+export type ContactLedger = {
+  contactId: string;
+  balance: number;
+  currency: "PHP";
+  history: PagedResult<LedgerHistoryItem>;
+};
+
+// What we send to record a transaction. A null occurredAt means "now" on the server.
+export type RecordEntryInput = {
+  type: TransactionType;
+  amount: number;
+  occurredAt: string | null;
+  dueDate: string | null;
+  description: string | null;
+};
