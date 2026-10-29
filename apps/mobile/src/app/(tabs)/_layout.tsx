@@ -9,7 +9,7 @@ export default function TabsLayout() {
         options={{
           title: "Dashboard",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="speedometer-outline" size={size} color={color == null ? undefined : String(color)} />
+            <Ionicons name="speedometer-outline" size={size} color={typeof color === "string" ? color : undefined} />
           ),
         }}
       />
@@ -17,7 +17,7 @@ export default function TabsLayout() {
         name="contacts"
         options={{
           title: "Contacts",
-          tabBarIcon: ({ color, size }) => <Ionicons name="people-outline" size={size} color={color == null ? undefined : String(color)} />,
+          tabBarIcon: ({ color, size }) => <Ionicons name="people-outline" size={size} color={typeof color === "string" ? color : undefined} />,
         }}
       />
       <Tabs.Screen
@@ -25,7 +25,7 @@ export default function TabsLayout() {
         options={{
           title: "Account",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-circle-outline" size={size} color={color == null ? undefined : String(color)} />
+            <Ionicons name="person-circle-outline" size={size} color={typeof color === "string" ? color : undefined} />
           ),
         }}
       />

@@ -2,12 +2,14 @@ import { useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Pressable,
   RefreshControl,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
+import { useRouter } from "expo-router";
 import { ErrorView } from "../../components/ErrorView";
 import { useContactsList } from "../../lib/queries";
 import { colors } from "../../lib/theme";
@@ -15,6 +17,7 @@ import type { Contact } from "../../lib/types";
 import { useDebouncedValue } from "../../lib/useDebouncedValue";
 
 export default function ContactsScreen() {
+  const router = useRouter();
   const [searchInput, setSearchInput] = useState("");
   const search = useDebouncedValue(searchInput.trim(), 300);
   const query = useContactsList(search);
@@ -86,18 +89,30 @@ export default function ContactsScreen() {
           }
         />
       )}
+            <Pressable
+        style={styles.fab}
+        accessibilityLabel="Add contact"
+        onPress={() => router.push("/contact-form")}
+      >
+        <Text style={styles.fabText}>+</Text>
+      </Pressable>
     </View>
   );
 }
 
 function ContactRow({ contact }: { contact: Contact }) {
+  const router = useRouter();
   const details = [contact.phone, contact.email].filter(Boolean).join(" · ");
 
   return (
-    <View style={styles.row}>
+    <Pressable
+      style={styles.row}
+      android_ripple={{ color: colors.border }}
+      onPress={() => router.push({ pathname: "/contact/[id]", params: { id: contact.id } })}
+    >
       <Text style={styles.name}>{contact.name}</Text>
       {details !== "" && <Text style={styles.muted}>{details}</Text>}
-    </View>
+    </Pressable>
   );
 }
 
@@ -129,4 +144,17 @@ const styles = StyleSheet.create({
   },
   name: { fontSize: 16, fontWeight: "500", color: colors.text },
   muted: { color: colors.muted },
+  fab: {
+    position: "absolute",
+    right: 20,
+    bottom: 20,
+    width: 56,
+    height: 56,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 28,
+    backgroundColor: colors.primary,
+    elevation: 4,
+  },
+  fabText: { color: "#fff", fontSize: 28, lineHeight: 30 },
 });
