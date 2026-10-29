@@ -1,7 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
-import { AuthProvider } from "../lib/AuthContext";
+import * as SplashScreen from "expo-splash-screen";
+import { AuthProvider, useAuth } from "../lib/AuthContext";
+
+// Keep the splash screen up until we know whether someone is signed in.
+SplashScreen.preventAutoHideAsync();
+
+function RootNavigator() {
+  const { status } = useAuth();
+  const signedIn = status === "signedIn";
+
+  useEffect(() => {
+    if (status !== "loading") {
+      void SplashScreen.hideAsync();
+    }
+  }, [status]);
+
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Protected guard={signedIn}>
+        <Stack.Screen name="(tabs)" />
+      </Stack.Protected>
+
+      <Stack.Protected guard={!signedIn}>
+        <Stack.Screen name="sign-in" />
+      </Stack.Protected>
+    </Stack>
+  );
+}
 
 export default function RootLayout() {
   const [queryClient] = useState(
@@ -11,7 +38,7 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Stack screenOptions={{ headerShown: false }} />
+        <RootNavigator />
       </AuthProvider>
     </QueryClientProvider>
   );
