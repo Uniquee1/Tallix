@@ -706,11 +706,15 @@ POST   /api/ledger/{id}/reverse
 GET    /api/dashboard
 
 POST   /api/sync
+GET    /api/sync/snapshot/contacts
+GET    /api/sync/snapshot/entries
 ```
 
 The synchronization endpoint may evolve into more specialized endpoints as implementation details become clearer.
 
 The API shall expose an OpenAPI specification.
+
+Snapshot endpoints return the user’s current contacts and ledger entries in id-ordered pages (keyset paging, after cursor). They are the first half of synchronization (pull); incremental changes and pushing queued operations are added later.
 
 ---
 
