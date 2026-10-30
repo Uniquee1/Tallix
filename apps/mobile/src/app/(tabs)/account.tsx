@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useQueryClient } from "@tanstack/react-query";
+import { Button } from "../../components/Button";
 import { ErrorView } from "../../components/ErrorView";
+import { LocalDataCard } from "../../components/LocalDataCard";
 import { useAuth } from "../../lib/AuthContext";
+import { wipeDatabase } from "../../lib/db/database";
 import { messageOf } from "../../lib/errors";
 import { useMe } from "../../lib/queries";
 import { colors } from "../../lib/theme";
@@ -22,12 +25,20 @@ export default function AccountScreen() {
       setError(messageOf(e));
     }
 
+    // Signing out always ends signed out, so whatever happened above,
+    // nothing may stay behind on the phone.
+    try {
+      await wipeDatabase();
+    } catch (e) {
+      console.warn("Could not delete the local database:", e);
+    }
+
     // Never let one person's cached data show up for the next.
     queryClient.clear();
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       {me.status === "pending" && <ActivityIndicator />}
 
       {me.status === "error" && (
@@ -47,17 +58,17 @@ export default function AccountScreen() {
         </View>
       )}
 
-      <Pressable onPress={handleSignOut} style={styles.button}>
-        <Text style={styles.buttonText}>Log out</Text>
-      </Pressable>
+      <LocalDataCard />
+
+      <Button label="Log out" onPress={handleSignOut} />
 
       {error && <Text style={styles.error}>{error}</Text>}
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: "center", justifyContent: "center", gap: 16, padding: 24 },
+  container: { gap: 16, padding: 24 },
   card: {
     alignItems: "center",
     gap: 4,
@@ -69,14 +80,5 @@ const styles = StyleSheet.create({
   },
   name: { fontSize: 20, fontWeight: "600", color: colors.text },
   muted: { color: colors.muted },
-  button: {
-    minWidth: 160,
-    alignItems: "center",
-    borderRadius: 8,
-    backgroundColor: colors.primary,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-  },
-  buttonText: { color: "#fff", fontSize: 16 },
   error: { color: colors.danger, textAlign: "center" },
 });
