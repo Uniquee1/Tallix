@@ -24,6 +24,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ...config,
     name: config.name ?? "Tallix",
     slug: config.slug ?? "tallix",
+    android: {
+      ...config.android,
+      // Android backs up app databases to Google Drive by default.
+      // Your ledger shouldn't leave the phone except through Tallix itself.
+      allowBackup: false,
+    },
     plugins: [
       ...otherPlugins,
       [
