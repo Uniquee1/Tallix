@@ -8,6 +8,7 @@ using Tallix.Application.Dashboard;
 using Tallix.Application.Ledger;
 using Tallix.Application.Users;
 using Tallix.Infrastructure;
+using Tallix.Application.Sync;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,6 +56,8 @@ builder.Services.AddScoped<GetLedgerEntry>();
 builder.Services.AddScoped<GetContactLedger>();
 builder.Services.AddScoped<ReverseLedgerEntry>();
 builder.Services.AddScoped<GetDashboard>();
+
+builder.Services.AddScoped<GetSnapshot>();
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
