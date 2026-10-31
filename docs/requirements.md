@@ -732,6 +732,7 @@ For:
 * Domain logic
 * Sync queue behavior
 * Conflict handling
+* Ledger rules implemented on both the server (C#) and the mobile app (TypeScript), verified against a single shared set of test cases (tests/shared/ledger-cases.json)
 
 ### Integration Tests
 
