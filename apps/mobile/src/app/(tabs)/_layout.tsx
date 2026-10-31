@@ -1,9 +1,11 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
+import { DataGate } from "../../components/DataGate";
 
 export default function TabsLayout() {
   return (
-    <Tabs>
+    <DataGate>
+      <Tabs>
       <Tabs.Screen
         name="index"
         options={{
@@ -30,5 +32,6 @@ export default function TabsLayout() {
         }}
       />
     </Tabs>
+    </DataGate>
   );
 }

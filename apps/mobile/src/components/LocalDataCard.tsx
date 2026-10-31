@@ -1,12 +1,15 @@
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { useMutation } from "@tanstack/react-query";
 import { formatDateTime } from "../lib/format";
 import { useHydrate, useLocalStats } from "../lib/localQueries";
+import { compareWithServer } from "../lib/sync/compare";
 import { colors } from "../lib/theme";
 import { Button } from "./Button";
 
 export function LocalDataCard() {
   const stats = useLocalStats();
   const hydrate = useHydrate();
+  const compare = useMutation({ mutationFn: compareWithServer, networkMode: "always" });
 
   return (
     <View style={styles.card}>
@@ -42,6 +45,22 @@ export function LocalDataCard() {
       )}
 
       {hydrate.status === "error" && <Text style={styles.error}>{hydrate.error.message}</Text>}
+
+      <Button
+        label={compare.isPending ? "Comparing…" : "Compare with server"}
+        variant="secondary"
+        disabled={compare.isPending}
+        onPress={() => compare.mutate()}
+      />
+
+      {compare.status === "success" &&
+        compare.data.map((line) => (
+          <Text key={line} style={line.includes("differ") ? styles.error : styles.muted}>
+            {line}
+          </Text>
+        ))}
+
+      {compare.status === "error" && <Text style={styles.error}>{compare.error.message}</Text>}
     </View>
   );
 }

@@ -9,9 +9,12 @@ import {
 import { useDashboard } from "../../lib/queries";
 import { colors } from "../../lib/theme";
 import type { DashboardDueGroup, DashboardTransaction } from "../../lib/types";
+import { usePullToSync } from "../../lib/localQueries";
 
 export default function DashboardScreen() {
   const query = useDashboard();
+
+  const { refresh, refreshing } = usePullToSync();
 
   if (query.status === "pending") {
     return (
@@ -38,14 +41,7 @@ export default function DashboardScreen() {
   return (
     <ScrollView
       contentContainerStyle={styles.content}
-      refreshControl={
-        <RefreshControl
-          refreshing={query.isRefetching}
-          onRefresh={() => {
-            void query.refetch();
-          }}
-        />
-      }
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
     >
       <Text style={styles.muted}>
         As of {formatCalendarDate(dashboard.asOf)} · {contacts} active{" "}

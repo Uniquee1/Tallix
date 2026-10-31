@@ -42,8 +42,15 @@ function RootNavigator() {
 }
 
 export default function RootLayout() {
-  const [queryClient] = useState(
-    () => new QueryClient({ defaultOptions: { queries: { staleTime: 30_000, retry: false } } }),
+    const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          // Everything is read from a local file, so nothing should ever wait for the network.
+          queries: { networkMode: "always", staleTime: 30_000, retry: false },
+          mutations: { networkMode: "always" },
+        },
+      }),
   );
 
   return (
