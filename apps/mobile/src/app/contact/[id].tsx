@@ -11,7 +11,6 @@ import {
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Button } from "../../components/Button";
 import { ErrorView } from "../../components/ErrorView";
-import { ApiError } from "../../lib/api";
 import {
   formatCalendarDate,
   formatDateTime,
@@ -21,6 +20,8 @@ import {
 import { useContact, useContactLedger, useReverseEntry } from "../../lib/queries";
 import { colors } from "../../lib/theme";
 import type { Contact, LedgerHistoryItem } from "../../lib/types";
+import { usePullToSync } from "../../lib/localQueries";
+import { isNotFound } from "../../lib/errors";
 
 export default function ContactScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -28,6 +29,8 @@ export default function ContactScreen() {
   const contact = useContact(id);
   const ledger = useContactLedger(id);
   const reverse = useReverseEntry(id);
+
+  const { refresh, refreshing } = usePullToSync();
 
   if (contact.status === "pending") {
     return (
@@ -38,7 +41,7 @@ export default function ContactScreen() {
   }
 
   if (contact.status === "error") {
-    if (contact.error instanceof ApiError && contact.error.status === 404) {
+    if (isNotFound(contact.error)) {
       return (
         <View style={styles.centered}>
           <Text style={styles.muted}>Contact not found.</Text>
@@ -118,14 +121,7 @@ export default function ContactScreen() {
             void ledger.fetchNextPage();
           }
         }}
-        refreshControl={
-          <RefreshControl
-            refreshing={ledger.isRefetching && !ledger.isFetchingNextPage}
-            onRefresh={() => {
-              void ledger.refetch();
-            }}
-          />
-        }
+              refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
       />
     </>
   );

@@ -15,12 +15,15 @@ import { useContactsList } from "../../lib/queries";
 import { colors } from "../../lib/theme";
 import type { Contact } from "../../lib/types";
 import { useDebouncedValue } from "../../lib/useDebouncedValue";
+import { usePullToSync } from "../../lib/localQueries";
 
 export default function ContactsScreen() {
   const router = useRouter();
   const [searchInput, setSearchInput] = useState("");
   const search = useDebouncedValue(searchInput.trim(), 300);
   const query = useContactsList(search);
+
+  const { refresh, refreshing } = usePullToSync();
 
   const contacts = query.data?.pages.flatMap((page) => page.items) ?? [];
   const total = query.data?.pages[0]?.totalCount ?? 0;
@@ -79,14 +82,7 @@ export default function ContactsScreen() {
               void query.fetchNextPage();
             }
           }}
-          refreshControl={
-            <RefreshControl
-              refreshing={query.isRefetching && !query.isFetchingNextPage}
-              onRefresh={() => {
-                void query.refetch();
-              }}
-            />
-          }
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
         />
       )}
             <Pressable
