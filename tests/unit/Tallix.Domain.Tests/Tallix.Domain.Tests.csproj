@@ -22,4 +22,10 @@
     <ProjectReference Include="..\..\..\services\api\Tallix.Domain\Tallix.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="..\..\shared\ledger-cases.json" Link="shared\ledger-cases.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

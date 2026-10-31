@@ -1,0 +1,225 @@
+{
+  "description": "Shared test cases for the ledger rules. The C# domain tests and the mobile app's TypeScript tests both run this file. Money is in whole centavos. 'at' is days after 2026-09-01T08:00:00Z. See README.md.",
+
+  "balance": [
+    { "name": "no entries is zero", "entries": [], "expectedCentavos": 0 },
+    { "name": "architecture example: lent 5000, payment 1000, lent 2000", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 500000, "at": 0 },
+      { "id": 2, "contactId": 1, "type": "PAYMENT_RECEIVED", "amountCentavos": 100000, "at": 1 },
+      { "id": 3, "contactId": 1, "type": "LENT", "amountCentavos": 200000, "at": 2 }
+    ], "expectedCentavos": 600000 },
+    { "name": "a partial payment leaves the remainder", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 500000, "at": 0 },
+      { "id": 2, "contactId": 1, "type": "PAYMENT_RECEIVED", "amountCentavos": 200000, "at": 1 }
+    ], "expectedCentavos": 300000 },
+    { "name": "borrowing from someone who owes you nets out", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 500000, "at": 0 },
+      { "id": 2, "contactId": 1, "type": "BORROWED", "amountCentavos": 100000, "at": 1 }
+    ], "expectedCentavos": 400000 },
+    { "name": "only borrowed is negative", "entries": [
+      { "id": 1, "contactId": 1, "type": "BORROWED", "amountCentavos": 80000, "at": 0 }
+    ], "expectedCentavos": -80000 },
+    { "name": "a payment made reduces what I owe", "entries": [
+      { "id": 1, "contactId": 1, "type": "BORROWED", "amountCentavos": 80000, "at": 0 },
+      { "id": 2, "contactId": 1, "type": "PAYMENT_MADE", "amountCentavos": 30000, "at": 1 }
+    ], "expectedCentavos": -50000 },
+    { "name": "an adjustment applies its own sign", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 100000, "at": 0 },
+      { "id": 2, "contactId": 1, "type": "ADJUSTMENT", "amountCentavos": -10000, "at": 1 }
+    ], "expectedCentavos": 90000 },
+    { "name": "paying more than is owed flips the balance", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 10000, "at": 0 },
+      { "id": 2, "contactId": 1, "type": "PAYMENT_RECEIVED", "amountCentavos": 15000, "at": 1 }
+    ], "expectedCentavos": -5000 },
+    { "name": "a reversal cancels the entry it reverses", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 500000, "at": 0 },
+      { "id": 2, "contactId": 1, "type": "ADJUSTMENT", "amountCentavos": -500000, "at": 1, "reversesEntryId": 1 }
+    ], "expectedCentavos": 0 },
+    { "name": "reversing a borrowing cancels it too", "entries": [
+      { "id": 1, "contactId": 1, "type": "BORROWED", "amountCentavos": 100000, "at": 0 },
+      { "id": 2, "contactId": 1, "type": "ADJUSTMENT", "amountCentavos": 100000, "at": 1, "reversesEntryId": 1 }
+    ], "expectedCentavos": 0 }
+  ],
+
+  "runningBalance": [
+    { "name": "the architecture example, oldest first", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 500000, "at": 0 },
+      { "id": 2, "contactId": 1, "type": "PAYMENT_RECEIVED", "amountCentavos": 100000, "at": 1 },
+      { "id": 3, "contactId": 1, "type": "LENT", "amountCentavos": 200000, "at": 2 }
+    ], "expected": [
+      { "id": 1, "balanceCentavos": 500000 },
+      { "id": 2, "balanceCentavos": 400000 },
+      { "id": 3, "balanceCentavos": 600000 }
+    ] },
+    { "name": "order comes from when things happened, not the order given", "entries": [
+      { "id": 3, "contactId": 1, "type": "LENT", "amountCentavos": 200000, "at": 2 },
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 500000, "at": 0 },
+      { "id": 2, "contactId": 1, "type": "PAYMENT_RECEIVED", "amountCentavos": 100000, "at": 1 }
+    ], "expected": [
+      { "id": 1, "balanceCentavos": 500000 },
+      { "id": 2, "balanceCentavos": 400000 },
+      { "id": 3, "balanceCentavos": 600000 }
+    ] },
+    { "name": "same moment: the one recorded earlier comes first", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 10000, "at": 0, "createdHoursLater": 2 },
+      { "id": 2, "contactId": 1, "type": "LENT", "amountCentavos": 20000, "at": 0, "createdHoursLater": 1 }
+    ], "expected": [
+      { "id": 2, "balanceCentavos": 20000 },
+      { "id": 1, "balanceCentavos": 30000 }
+    ] },
+    { "name": "same moment and same recording time: lower id first", "entries": [
+      { "id": 2, "contactId": 1, "type": "LENT", "amountCentavos": 20000, "at": 0 },
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 10000, "at": 0 }
+    ], "expected": [
+      { "id": 1, "balanceCentavos": 10000 },
+      { "id": 2, "balanceCentavos": 30000 }
+    ] },
+    { "name": "a reversal brings the balance back down", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 500000, "at": 0 },
+      { "id": 2, "contactId": 1, "type": "ADJUSTMENT", "amountCentavos": -500000, "at": 1, "reversesEntryId": 1 }
+    ], "expected": [
+      { "id": 1, "balanceCentavos": 500000 },
+      { "id": 2, "balanceCentavos": 0 }
+    ] },
+    { "name": "a backdated entry shifts the balances after it", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 100000, "at": 0 },
+      { "id": 2, "contactId": 1, "type": "LENT", "amountCentavos": 50000, "at": 2 },
+      { "id": 3, "contactId": 1, "type": "PAYMENT_RECEIVED", "amountCentavos": 20000, "at": 1 }
+    ], "expected": [
+      { "id": 1, "balanceCentavos": 100000 },
+      { "id": 3, "balanceCentavos": 80000 },
+      { "id": 2, "balanceCentavos": 130000 }
+    ] }
+  ],
+
+  "outstanding": [
+    { "name": "nothing outstanding without entries", "entries": [], "expected": [] },
+    { "name": "fully settled has nothing outstanding", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 100000, "at": 0, "dueDate": "2026-10-10" },
+      { "id": 2, "contactId": 1, "type": "PAYMENT_RECEIVED", "amountCentavos": 100000, "at": 1 }
+    ], "expected": [] },
+    { "name": "a payment settles the oldest due date first", "entries": [
+      { "id": 2, "contactId": 1, "type": "LENT", "amountCentavos": 100000, "at": 1, "dueDate": "2026-11-10" },
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 100000, "at": 0, "dueDate": "2026-10-10" },
+      { "id": 3, "contactId": 1, "type": "PAYMENT_RECEIVED", "amountCentavos": 100000, "at": 2 }
+    ], "expected": [
+      { "id": 2, "outstandingCentavos": 100000, "direction": "OWED_TO_ME" }
+    ] },
+    { "name": "a partial payment leaves the shortfall on the oldest", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 100000, "at": 0, "dueDate": "2026-10-10" },
+      { "id": 2, "contactId": 1, "type": "LENT", "amountCentavos": 100000, "at": 1, "dueDate": "2026-11-10" },
+      { "id": 3, "contactId": 1, "type": "PAYMENT_RECEIVED", "amountCentavos": 50000, "at": 2 }
+    ], "expected": [
+      { "id": 1, "outstandingCentavos": 50000, "direction": "OWED_TO_ME" },
+      { "id": 2, "outstandingCentavos": 100000, "direction": "OWED_TO_ME" }
+    ] },
+    { "name": "a reversed entry is not a debt", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 100000, "at": 0, "dueDate": "2026-12-01" },
+      { "id": 2, "contactId": 1, "type": "ADJUSTMENT", "amountCentavos": -100000, "at": 1, "reversesEntryId": 1 },
+      { "id": 3, "contactId": 1, "type": "LENT", "amountCentavos": 50000, "at": 2, "dueDate": "2026-11-10" }
+    ], "expected": [
+      { "id": 3, "outstandingCentavos": 50000, "direction": "OWED_TO_ME" }
+    ] },
+    { "name": "payments settle dated debts before undated ones", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 100000, "at": 0 },
+      { "id": 2, "contactId": 1, "type": "LENT", "amountCentavos": 100000, "at": 1, "dueDate": "2026-10-10" },
+      { "id": 3, "contactId": 1, "type": "PAYMENT_RECEIVED", "amountCentavos": 100000, "at": 2 }
+    ], "expected": [
+      { "id": 1, "outstandingCentavos": 100000, "direction": "OWED_TO_ME" }
+    ] },
+    { "name": "what I owe: a payment made reduces it", "entries": [
+      { "id": 1, "contactId": 1, "type": "BORROWED", "amountCentavos": 80000, "at": 0, "dueDate": "2026-10-10" },
+      { "id": 2, "contactId": 1, "type": "PAYMENT_MADE", "amountCentavos": 30000, "at": 1 }
+    ], "expected": [
+      { "id": 1, "outstandingCentavos": 50000, "direction": "I_OWE" }
+    ] },
+    { "name": "an opposite entry reduces what is outstanding", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 100000, "at": 0, "dueDate": "2026-10-10" },
+      { "id": 2, "contactId": 1, "type": "BORROWED", "amountCentavos": 30000, "at": 1 }
+    ], "expected": [
+      { "id": 1, "outstandingCentavos": 70000, "direction": "OWED_TO_ME" }
+    ] },
+    { "name": "a balance with no matching debt has nothing outstanding", "entries": [
+      { "id": 1, "contactId": 1, "type": "ADJUSTMENT", "amountCentavos": 50000, "at": 0 }
+    ], "expected": [] },
+    { "name": "entries of several contacts are rejected", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 10000, "at": 0 },
+      { "id": 2, "contactId": 2, "type": "LENT", "amountCentavos": 10000, "at": 1 }
+    ], "expectError": true },
+    { "name": "equal due dates: the older entry is settled first", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 10000, "at": 1, "dueDate": "2026-10-10" },
+      { "id": 2, "contactId": 1, "type": "LENT", "amountCentavos": 10000, "at": 0, "dueDate": "2026-10-10" },
+      { "id": 3, "contactId": 1, "type": "PAYMENT_RECEIVED", "amountCentavos": 10000, "at": 2 }
+    ], "expected": [
+      { "id": 1, "outstandingCentavos": 10000, "direction": "OWED_TO_ME" }
+    ] }
+  ],
+
+  "dashboard": [
+    { "name": "no entries is all zero", "asOf": "2026-10-25", "entries": [], "expected": {
+      "totalOwedToMeCentavos": 0, "totalIOweCentavos": 0, "activeContactCount": 0, "overdue": [], "upcoming": [] } },
+    { "name": "balances net within a contact but not across contacts", "asOf": "2026-10-25", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 500000, "at": 0 },
+      { "id": 2, "contactId": 1, "type": "BORROWED", "amountCentavos": 100000, "at": 1 },
+      { "id": 3, "contactId": 2, "type": "BORROWED", "amountCentavos": 100000, "at": 2 }
+    ], "expected": {
+      "totalOwedToMeCentavos": 400000, "totalIOweCentavos": 100000, "activeContactCount": 2, "overdue": [], "upcoming": [] } },
+    { "name": "a settled contact is not active", "asOf": "2026-10-25", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 10000, "at": 0 },
+      { "id": 2, "contactId": 1, "type": "PAYMENT_RECEIVED", "amountCentavos": 10000, "at": 1 }
+    ], "expected": {
+      "totalOwedToMeCentavos": 0, "totalIOweCentavos": 0, "activeContactCount": 0, "overdue": [], "upcoming": [] } },
+    { "name": "debts are sorted into overdue, upcoming and later", "asOf": "2026-10-25", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 10000, "at": 0, "dueDate": "2026-10-24" },
+      { "id": 2, "contactId": 1, "type": "LENT", "amountCentavos": 20000, "at": 1, "dueDate": "2026-10-25" },
+      { "id": 3, "contactId": 1, "type": "LENT", "amountCentavos": 30000, "at": 2, "dueDate": "2026-11-01" },
+      { "id": 4, "contactId": 1, "type": "LENT", "amountCentavos": 40000, "at": 3, "dueDate": "2026-11-02" }
+    ], "expected": {
+      "totalOwedToMeCentavos": 100000, "totalIOweCentavos": 0, "activeContactCount": 1,
+      "overdue": [ { "id": 1, "outstandingCentavos": 10000, "direction": "OWED_TO_ME" } ],
+      "upcoming": [
+        { "id": 2, "outstandingCentavos": 20000, "direction": "OWED_TO_ME" },
+        { "id": 3, "outstandingCentavos": 30000, "direction": "OWED_TO_ME" }
+      ] } },
+    { "name": "a payment on the oldest debt removes it from overdue", "asOf": "2026-10-25", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 100000, "at": 0, "dueDate": "2026-10-10" },
+      { "id": 2, "contactId": 1, "type": "LENT", "amountCentavos": 100000, "at": 1, "dueDate": "2026-11-10" },
+      { "id": 3, "contactId": 1, "type": "PAYMENT_RECEIVED", "amountCentavos": 100000, "at": 2 }
+    ], "expected": {
+      "totalOwedToMeCentavos": 100000, "totalIOweCentavos": 0, "activeContactCount": 1, "overdue": [], "upcoming": [] } },
+    { "name": "a partial payment leaves the shortfall overdue", "asOf": "2026-10-25", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 100000, "at": 0, "dueDate": "2026-10-10" },
+      { "id": 2, "contactId": 1, "type": "LENT", "amountCentavos": 100000, "at": 1, "dueDate": "2026-11-10" },
+      { "id": 3, "contactId": 1, "type": "PAYMENT_RECEIVED", "amountCentavos": 50000, "at": 2 }
+    ], "expected": {
+      "totalOwedToMeCentavos": 150000, "totalIOweCentavos": 0, "activeContactCount": 1,
+      "overdue": [ { "id": 1, "outstandingCentavos": 50000, "direction": "OWED_TO_ME" } ],
+      "upcoming": [] } },
+    { "name": "undated debts are never overdue or upcoming", "asOf": "2026-10-25", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 10000, "at": 0 }
+    ], "expected": {
+      "totalOwedToMeCentavos": 10000, "totalIOweCentavos": 0, "activeContactCount": 1, "overdue": [], "upcoming": [] } },
+    { "name": "overdue is ordered by due date", "asOf": "2026-10-25", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 10000, "at": 0, "dueDate": "2026-10-20" },
+      { "id": 2, "contactId": 2, "type": "LENT", "amountCentavos": 10000, "at": 1, "dueDate": "2026-10-05" }
+    ], "expected": {
+      "totalOwedToMeCentavos": 20000, "totalIOweCentavos": 0, "activeContactCount": 2,
+      "overdue": [
+        { "id": 2, "outstandingCentavos": 10000, "direction": "OWED_TO_ME" },
+        { "id": 1, "outstandingCentavos": 10000, "direction": "OWED_TO_ME" }
+      ],
+      "upcoming": [] } },
+    { "name": "the end of the calendar does not overflow", "asOf": "9999-12-31", "entries": [
+      { "id": 1, "contactId": 1, "type": "LENT", "amountCentavos": 10000, "at": 0, "dueDate": "2026-10-01" }
+    ], "expected": {
+      "totalOwedToMeCentavos": 10000, "totalIOweCentavos": 0, "activeContactCount": 1,
+      "overdue": [ { "id": 1, "outstandingCentavos": 10000, "direction": "OWED_TO_ME" } ],
+      "upcoming": [] } },
+    { "name": "what I owe appears with its direction", "asOf": "2026-10-25", "entries": [
+      { "id": 1, "contactId": 1, "type": "BORROWED", "amountCentavos": 100000, "at": 0, "dueDate": "2026-10-30" }
+    ], "expected": {
+      "totalOwedToMeCentavos": 0, "totalIOweCentavos": 100000, "activeContactCount": 1,
+      "overdue": [],
+      "upcoming": [ { "id": 1, "outstandingCentavos": 100000, "direction": "I_OWE" } ] } }
+  ]
+}
