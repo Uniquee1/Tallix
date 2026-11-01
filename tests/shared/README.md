@@ -22,3 +22,4 @@ against the C# code, and then the TypeScript must agree.
   entry it names. Its `at` is the moment of the reversal, and its amount must
   equal what the domain would create.
 - `expectError: true` means the rule must refuse the input.
+- `entryValidation` and `contactNormalization` describe input that the domain accepts or rejects. `…Length` fields mean ‘a text of that many characters’. expectedError is the exact message.
