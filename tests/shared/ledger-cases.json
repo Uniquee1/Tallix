@@ -221,5 +221,33 @@
       "totalOwedToMeCentavos": 0, "totalIOweCentavos": 100000, "activeContactCount": 1,
       "overdue": [],
       "upcoming": [ { "id": 1, "outstandingCentavos": 100000, "direction": "I_OWE" } ] } }
+  ],
+    "entryValidation": [
+    { "name": "a valid loan is accepted", "type": "LENT", "amountCentavos": 500000, "expectedError": null },
+    { "name": "a loan of zero is rejected", "type": "LENT", "amountCentavos": 0, "expectedError": "Amount must be greater than zero." },
+    { "name": "a negative loan is rejected", "type": "LENT", "amountCentavos": -50000, "expectedError": "Amount must be greater than zero." },
+    { "name": "a negative borrowing is rejected", "type": "BORROWED", "amountCentavos": -100, "expectedError": "Amount must be greater than zero." },
+    { "name": "a payment received of zero is rejected", "type": "PAYMENT_RECEIVED", "amountCentavos": 0, "expectedError": "Amount must be greater than zero." },
+    { "name": "a negative payment made is rejected", "type": "PAYMENT_MADE", "amountCentavos": -1000, "expectedError": "Amount must be greater than zero." },
+    { "name": "an adjustment of zero is rejected", "type": "ADJUSTMENT", "amountCentavos": 0, "expectedError": "An adjustment cannot be zero." },
+    { "name": "a negative adjustment is accepted", "type": "ADJUSTMENT", "amountCentavos": -25000, "expectedError": null },
+    { "name": "a description of exactly 500 characters is accepted", "type": "LENT", "amountCentavos": 10000, "descriptionLength": 500, "expectedError": null },
+    { "name": "a description of 501 characters is rejected", "type": "LENT", "amountCentavos": 10000, "descriptionLength": 501, "expectedError": "Description cannot exceed 500 characters." },
+    { "name": "a description is trimmed", "type": "LENT", "amountCentavos": 10000, "description": "  Rent help  ", "expectedError": null, "expectedDescription": "Rent help" }
+  ],
+
+  "contactNormalization": [
+    { "name": "the name is trimmed", "input": { "name": "  Juan Santos  " },
+      "expected": { "name": "Juan Santos", "phone": null, "email": null, "notes": null } },
+    { "name": "blank optional fields become null", "input": { "name": "Juan", "phone": "  ", "email": "", "notes": " " },
+      "expected": { "name": "Juan", "phone": null, "email": null, "notes": null } },
+    { "name": "optional fields are trimmed", "input": { "name": "Juan", "phone": " 0917 123 4567 ", "email": " juan@example.com ", "notes": " Neighbor " },
+      "expected": { "name": "Juan", "phone": "0917 123 4567", "email": "juan@example.com", "notes": "Neighbor" } },
+    { "name": "a blank name is rejected", "input": { "name": "   " }, "expectedError": "Contact name is required." },
+    { "name": "a name of 201 characters is rejected", "input": { "nameLength": 201 }, "expectedError": "Contact name cannot exceed 200 characters." },
+    { "name": "a phone of 51 characters is rejected", "input": { "name": "Juan", "phoneLength": 51 }, "expectedError": "Phone cannot exceed 50 characters." },
+    { "name": "an email of 321 characters is rejected", "input": { "name": "Juan", "emailLength": 321 }, "expectedError": "Email cannot exceed 320 characters." },
+    { "name": "notes of 2001 characters are rejected", "input": { "name": "Juan", "notesLength": 2001 }, "expectedError": "Notes cannot exceed 2000 characters." },
+    { "name": "every limit is inclusive", "input": { "nameLength": 200, "phoneLength": 50, "emailLength": 320, "notesLength": 2000 } }
   ]
 }

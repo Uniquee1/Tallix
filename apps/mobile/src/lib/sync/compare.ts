@@ -14,7 +14,11 @@ function normalize(value: unknown): unknown {
   }
 
   if (value && typeof value === "object") {
-    return Object.fromEntries(Object.entries(value).map(([key, v]) => [key, normalize(v)]));
+        return Object.fromEntries(
+      Object.entries(value)
+        .filter(([key]) => key !== "syncStatus")
+        .map(([key, v]) => [key, normalize(v)]),
+    );
   }
 
   return value;

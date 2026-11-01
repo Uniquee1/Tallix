@@ -1,5 +1,5 @@
 import { apiGet } from "../api";
-import { getDb, wipeDatabase } from "../db/database";
+import { inTransaction, wipeDatabase } from "../db/database";
 import { getMeta, setMeta } from "../db/meta";
 import { deleteContactIfUnreferenced, upsertContact, upsertEntry } from "../db/store";
 import type { Contact, LedgerEntry, User } from "../types";
@@ -51,10 +51,9 @@ async function run(): Promise<HydrateResult> {
   ];
 
   // 2. Apply it all in one transaction: either everything lands, or nothing does.
-  const db = await getDb();
   const seenContacts = new Set(contacts.map((c) => c.id));
 
-  await db.withTransactionAsync(async () => {
+  await inTransaction(async (db) => {
     // Who this data belongs to, so the Account tab can show it offline.
     await setMeta("owner_user_id", me.id);
     await setMeta("owner_display_name", me.displayName);

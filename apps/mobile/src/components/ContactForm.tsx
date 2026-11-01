@@ -4,10 +4,7 @@ import { colors } from "../lib/theme";
 import type { Contact, ContactInput } from "../lib/types";
 import { Button } from "./Button";
 import { Field } from "./Field";
-
-// These mirror the limits in the API's domain, for convenience only.
-// The API stays the authority and rejects anything invalid.
-const LIMITS = { name: 200, phone: 50, email: 320, notes: 2000 };
+import { CONTACT_LIMITS as LIMITS } from "../lib/ledger/validate";
 
 type Props = {
   initial?: Contact;

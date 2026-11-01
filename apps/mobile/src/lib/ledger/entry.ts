@@ -44,3 +44,11 @@ export function compareByTime(a: LedgerRow, b: LedgerRow): number {
     compareText(a.id, b.id)
   );
 }
+
+// What a reversal of this entry must be worth: the exact opposite of the entry's
+// effect on the balance. Same rule as LedgerEntry.CreateReversal on the server.
+export function reversalAmountCentavos(
+  original: Pick<LedgerRow, "type" | "amountCentavos">,
+): number {
+  return -signedCentavos(original);
+}
