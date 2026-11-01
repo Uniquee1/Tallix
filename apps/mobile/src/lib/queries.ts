@@ -64,12 +64,20 @@ export function useContactLedger(contactId: string) {
 
 // ---------- Writes ----------
 
+// The count of changes waiting to sync lives under the "local" key.
+const pendingCount = (queryClient: QueryClient) =>
+  queryClient.invalidateQueries({ queryKey: ["local"] });
+
 export function useCreateContact() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (input: ContactInput) => repositories.contacts.create(input),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["contacts"] }),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["contacts"] }),
+        pendingCount(queryClient),
+      ]),
   });
 }
 
@@ -85,6 +93,7 @@ export function useUpdateContact() {
         queryClient.invalidateQueries({ queryKey: ["contact"] }),
         // The dashboard shows contact names, so it is out of date too.
         queryClient.invalidateQueries({ queryKey: ["dashboard"] }),
+        pendingCount(queryClient),
       ]),
   });
 }
@@ -98,7 +107,11 @@ export function useDeleteContact() {
       // The contact is gone, so nothing may try to load it again.
       queryClient.removeQueries({ queryKey: ["contact", id] });
       queryClient.removeQueries({ queryKey: ["ledger", id] });
-      return queryClient.invalidateQueries({ queryKey: ["contacts"] });
+
+      return Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["contacts"] }),
+        pendingCount(queryClient),
+      ]);
     },
   });
 }
@@ -127,5 +140,6 @@ function invalidateLedgerData(queryClient: QueryClient, contactId: string) {
     queryClient.invalidateQueries({ queryKey: ["ledger", contactId] }),
     // Totals, due dates and recent transactions all come from the same entries.
     queryClient.invalidateQueries({ queryKey: ["dashboard"] }),
+    pendingCount(queryClient),
   ]);
 }

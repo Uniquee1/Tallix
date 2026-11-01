@@ -199,6 +199,8 @@ A reversed transaction must remain traceable.
 Offline-created corrections shall be synchronized when connectivity is restored.
 
 A reversal is recorded as a new ADJUSTMENT entry whose amount is the exact opposite of the original entry's effect on the balance, and which links back to the original. An entry can be reversed at most once, and a reversal cannot itself be reversed.
+
+A reversal of an entry that has not yet synchronized is recorded in the ordinary way, as a new entry; both are synchronized in order and nothing is deleted.
 ---
 
 # FR-010 Due Dates
@@ -541,6 +543,8 @@ Retry later
 ```
 
 The user should be able to retry synchronization manually.
+
+Logging out deletes the local database. If changes have not been synchronized, the user must explicitly confirm that they will be lost.
 
 ---
 

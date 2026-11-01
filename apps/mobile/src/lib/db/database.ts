@@ -28,6 +28,34 @@ export function getDb(): Promise<SQLite.SQLiteDatabase> {
   return opening;
 }
 
+let transactions: Promise<void> = Promise.resolve();
+
+// Every transaction goes through here, one at a time. Two transactions at once on the same
+// connection collide, and any other query issued while one is open silently runs INSIDE it.
+// The work must not call inTransaction itself: it would wait for itself forever.
+export function inTransaction<T>(work: (db: SQLite.SQLiteDatabase) => Promise<T>): Promise<T> {
+  const run = async (): Promise<T> => {
+    const db = await getDb();
+    let result: T | undefined;
+
+    await db.withTransactionAsync(async () => {
+      result = await work(db);
+    });
+
+    return result as T;
+  };
+
+  const next = transactions.then(run);
+
+  // The next transaction waits for this one, whether it succeeded or failed.
+  transactions = next.then(
+    () => undefined,
+    () => undefined,
+  );
+
+  return next;
+}
+
 // Deletes the database file. Used on sign-out and when a different account signs in.
 export async function wipeDatabase(): Promise<void> {
   // Opening first guarantees there is a file to delete.

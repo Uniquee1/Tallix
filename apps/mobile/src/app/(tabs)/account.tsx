@@ -1,14 +1,30 @@
 import { useState } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "../../components/Button";
 import { ErrorView } from "../../components/ErrorView";
 import { LocalDataCard } from "../../components/LocalDataCard";
 import { useAuth } from "../../lib/AuthContext";
 import { wipeDatabase } from "../../lib/db/database";
+import { getLocalStats } from "../../lib/db/meta";
 import { messageOf } from "../../lib/errors";
 import { useMe } from "../../lib/queries";
 import { colors } from "../../lib/theme";
+
+// Logging out deletes the local database, so unsynced changes would be lost. Ask first.
+function confirmDiscard(count: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    Alert.alert(
+      "Unsynced changes",
+      `${count} ${count === 1 ? "change hasn’t" : "changes haven’t"} been sent to the server and will be lost if you log out.`,
+      [
+        { text: "Cancel", style: "cancel", onPress: () => resolve(false) },
+        { text: "Log out anyway", style: "destructive", onPress: () => resolve(true) },
+      ],
+      { cancelable: true, onDismiss: () => resolve(false) },
+    );
+  });
+}
 
 export default function AccountScreen() {
   const { signOut } = useAuth();
@@ -18,6 +34,12 @@ export default function AccountScreen() {
 
   async function handleSignOut() {
     setError(null);
+
+    const { pending } = await getLocalStats();
+
+    if (pending > 0 && !(await confirmDiscard(pending))) {
+      return;
+    }
 
     try {
       await signOut();

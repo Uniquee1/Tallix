@@ -14,6 +14,7 @@ import type {
   DashboardDueGroup,
   TransactionType,
   User,
+  SyncStatus,
 } from "../types";
 import type {
   ContactRepository,
@@ -34,6 +35,7 @@ type ContactRow = {
   notes: string | null;
   created_at: string;
   updated_at: string;
+  sync_status: SyncStatus;
 };
 
 type EntryRow = {
@@ -46,11 +48,12 @@ type EntryRow = {
   due_date: string | null;
   created_at: string;
   reverses_entry_id: string | null;
+  sync_status: SyncStatus;
 };
 
-const CONTACT_COLUMNS = "id, name, phone, email, notes, created_at, updated_at";
+const CONTACT_COLUMNS = "id, name, phone, email, notes, created_at, updated_at, sync_status";
 const ENTRY_COLUMNS =
-  "id, contact_id, type, amount_centavos, description, occurred_at, due_date, created_at, reverses_entry_id";
+  "id, contact_id, type, amount_centavos, description, occurred_at, due_date, created_at, reverses_entry_id, sync_status";
 
 const toContact = (r: ContactRow): Contact => ({
   id: r.id,
@@ -60,6 +63,7 @@ const toContact = (r: ContactRow): Contact => ({
   notes: r.notes,
   createdAt: r.created_at,
   updatedAt: r.updated_at,
+  syncStatus: r.sync_status,
 });
 
 const toLedgerRow = (r: EntryRow): LedgerRow => ({
@@ -169,6 +173,7 @@ export const localLedgerReads: Pick<LedgerRepository, "forContact"> = {
     );
 
     const descriptions = new Map(rows.map((r) => [r.id, r.description]));
+    const statuses = new Map(rows.map((r) => [r.id, r.sync_status]));
     const entries = rows.map(toLedgerRow);
 
     // The running balance comes from the whole history, so a later page is still correct.
@@ -201,6 +206,7 @@ export const localLedgerReads: Pick<LedgerRepository, "forContact"> = {
         createdAt: entry.createdAt,
         reversesEntryId: entry.reversesEntryId,
         reversedByEntryId: reversedBy.get(entry.id) ?? null,
+        syncStatus: statuses.get(entry.id) ?? "SYNCED",
       }));
 
     return {

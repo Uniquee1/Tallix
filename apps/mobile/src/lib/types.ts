@@ -29,7 +29,10 @@ export type Contact = {
   notes: string | null;
   createdAt: string;
   updatedAt: string;
+  syncStatus?: SyncStatus;
 };
+
+export type SyncStatus = "SYNCED" | "PENDING" | "FAILED";
 
 // The API sends these as text, in these exact forms.
 export type TransactionType =
@@ -119,6 +122,7 @@ export type LedgerHistoryItem = {
   createdAt: string;
   reversesEntryId: string | null;
   reversedByEntryId: string | null;
+  syncStatus?: SyncStatus;
 };
 
 export type ContactLedger = {
