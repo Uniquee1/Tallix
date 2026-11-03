@@ -52,6 +52,10 @@ public sealed class RecordLedgerEntry
             throw new DomainException("Amount is required.");
 
         var now = _clock.GetUtcNow();
+        var occurredAt = request.OccurredAt ?? now;
+
+        // A clock that is far ahead would put this entry at the top of every history forever.
+        LedgerEntry.EnsureNotTooFarInFuture(occurredAt, now);
 
         var entry = LedgerEntry.Create(
             Guid.NewGuid(),
@@ -59,7 +63,7 @@ public sealed class RecordLedgerEntry
             contact.Id,
             request.Type.Value,
             new Money(request.Amount.Value, request.Currency ?? Currency.PHP),
-            request.OccurredAt ?? now,
+            occurredAt,
             now,
             request.Description,
             request.DueDate);

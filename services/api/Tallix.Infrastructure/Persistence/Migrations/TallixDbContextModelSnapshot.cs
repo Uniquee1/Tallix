@@ -62,6 +62,11 @@ namespace Tallix.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("user_id");
 
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .HasColumnType("integer")
+                        .HasColumnName("version");
+
                     b.HasKey("Id")
                         .HasName("pk_contacts");
 
@@ -97,6 +102,12 @@ namespace Tallix.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset>("OccurredAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("occurred_at");
+
+                    b.Property<DateTimeOffset>("ReceivedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("received_at")
+                        .HasDefaultValueSql("now()");
 
                     b.Property<Guid?>("ReversesEntryId")
                         .HasColumnType("uuid")
@@ -192,6 +203,60 @@ namespace Tallix.Infrastructure.Persistence.Migrations
                     b.ToTable("users", (string)null);
                 });
 
+            modelBuilder.Entity("Tallix.Infrastructure.Persistence.SyncOperationRecord", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("code");
+
+                    b.Property<Guid>("EntityId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("entity_id");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("entity_type");
+
+                    b.Property<string>("Message")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("message");
+
+                    b.Property<string>("OperationType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("operation_type");
+
+                    b.Property<DateTimeOffset>("ReceivedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("received_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("status");
+
+                    b.HasKey("UserId", "Id")
+                        .HasName("pk_sync_operations");
+
+                    b.ToTable("sync_operations", (string)null);
+                });
+
             modelBuilder.Entity("Tallix.Domain.Contacts.Contact", b =>
                 {
                     b.HasOne("Tallix.Domain.Users.User", null)
@@ -223,6 +288,16 @@ namespace Tallix.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_ledger_entries_users");
+                });
+
+            modelBuilder.Entity("Tallix.Infrastructure.Persistence.SyncOperationRecord", b =>
+                {
+                    b.HasOne("Tallix.Domain.Users.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_sync_operations_users");
                 });
 #pragma warning restore 612, 618
         }

@@ -43,6 +43,10 @@ internal sealed class LedgerEntryConfiguration : IEntityTypeConfiguration<Ledger
         builder.Property(e => e.OccurredAt).HasColumnName("occurred_at");
         builder.Property(e => e.DueDate).HasColumnName("due_date");
         builder.Property(e => e.CreatedAt).HasColumnName("created_at");
+        builder.Property<DateTimeOffset>("ReceivedAt")
+            .HasColumnName("received_at")
+            .HasDefaultValueSql("now()")
+            .ValueGeneratedOnAdd();
         builder.Property(e => e.ReversesEntryId).HasColumnName("reverses_entry_id");
 
         // Computed in C#, never stored.

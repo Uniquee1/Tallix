@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Tallix.Application.Contacts;
 using Tallix.Domain.Contacts;
+using Tallix.Application.Common;
 
 namespace Tallix.Infrastructure.Persistence;
 
@@ -61,10 +62,23 @@ internal sealed class ContactRepository : IContactRepository
         await _db.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateAsync(Contact contact, CancellationToken cancellationToken)
+        public async Task UpdateAsync(Contact contact, CancellationToken cancellationToken)
     {
-        _db.Contacts.Update(contact);
-        await _db.SaveChangesAsync(cancellationToken);
+        var entry = _db.Contacts.Update(contact);
+
+        // Contact.Update raised the version by exactly one, so the version this edit was
+        // based on is one lower. That is what the UPDATE must still find in the database.
+        entry.Property(c => c.Version).OriginalValue = contact.Version - 1;
+
+        try
+        {
+            await _db.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            _db.Entry(contact).State = EntityState.Detached;
+            throw new ConflictException("This contact was changed somewhere else. Reload it and try again.");
+        }
     }
 
     public async Task<bool> TryDeleteAsync(Contact contact, CancellationToken cancellationToken)

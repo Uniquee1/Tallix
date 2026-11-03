@@ -9,7 +9,8 @@ public sealed record ContactDto(
     string? Email,
     string? Notes,
     DateTimeOffset CreatedAt,
-    DateTimeOffset UpdatedAt)
+    DateTimeOffset UpdatedAt,
+    int Version)
 {
     public static ContactDto From(Contact contact) => new(
         contact.Id,
@@ -18,5 +19,6 @@ public sealed record ContactDto(
         contact.Email,
         contact.Notes,
         contact.CreatedAt,
-        contact.UpdatedAt);
+        contact.UpdatedAt,
+        contact.Version);
 }

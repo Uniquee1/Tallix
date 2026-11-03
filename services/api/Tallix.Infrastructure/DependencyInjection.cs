@@ -21,7 +21,8 @@ public static class DependencyInjection
         services.AddScoped<IContactRepository, ContactRepository>();
         services.AddScoped<ILedgerRepository, LedgerRepository>();
         services.AddScoped<ISnapshotRepository, SnapshotRepository>();
-
+        services.AddScoped<ISyncStore, SyncStore>();
+        
         return services;
     }
 }

@@ -17,6 +17,8 @@ public class Contact
     public string? Notes { get; private set; }
     public DateTimeOffset CreatedAt { get; }
     public DateTimeOffset UpdatedAt { get; private set; }
+    /// <summary>Raised on every edit. A client's edit must say which version it was based on.</summary>
+    public int Version { get; private set; }
 
     // For EF Core materialization only. Application code must use Create(...).
     private Contact()
@@ -37,6 +39,7 @@ public class Contact
         Notes = notes;
         CreatedAt = createdAt;
         UpdatedAt = createdAt;
+        Version++;
     }
 
     public static Contact Create(
@@ -76,6 +79,7 @@ public class Contact
         Email = details.Email;
         Notes = details.Notes;
         UpdatedAt = updatedAt;
+        Version++;
     }
 
     private static (string Name, string? Phone, string? Email, string? Notes) ValidateDetails(

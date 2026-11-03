@@ -42,7 +42,8 @@ internal sealed class SnapshotRepository : ISnapshotRepository
                 occurred_at,
                 due_date,
                 created_at,
-                reverses_entry_id
+                reverses_entry_id,
+                received_at
             FROM ledger_entries
             WHERE user_id = {userId} AND id > {after}
             ORDER BY id
