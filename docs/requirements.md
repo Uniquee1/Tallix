@@ -709,12 +709,12 @@ POST   /api/ledger/{id}/reverse
 
 GET    /api/dashboard
 
-POST   /api/sync
+POST   /api/sync/operations
 GET    /api/sync/snapshot/contacts
 GET    /api/sync/snapshot/entries
 ```
 
-The synchronization endpoint may evolve into more specialized endpoints as implementation details become clearer.
+POST /api/sync/operations applies a client’s queued changes in order. Each operation carries a client-generated id, and the server records every id it has handled, so a retried operation is acknowledged and never applied twice. A change that breaks a rule is refused with a code and a message. Contact edits state the version they were based on, and an edit based on an old version is refused instead of overwriting.
 
 The API shall expose an OpenAPI specification.
 

@@ -6,6 +6,19 @@ public class LedgerEntry
 {
     public const int MaxDescriptionLength = 500;
 
+        /// <summary>
+    /// How far ahead of the server's clock an entry's time may be. A device whose clock is far
+    /// ahead would otherwise put its entries at the top of every history forever.
+    /// </summary>
+    public static readonly TimeSpan MaxFutureSkew = TimeSpan.FromHours(24);
+
+    public static void EnsureNotTooFarInFuture(DateTimeOffset when, DateTimeOffset now)
+    {
+        if (when - now > MaxFutureSkew)
+            throw new DomainException(
+                "That date is more than a day in the future. Check the clock on your device.");
+    }
+
     public Guid Id { get; }
     public Guid UserId { get; }
     public Guid ContactId { get; }

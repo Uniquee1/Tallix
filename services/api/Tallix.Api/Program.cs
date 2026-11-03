@@ -59,6 +59,8 @@ builder.Services.AddScoped<GetDashboard>();
 
 builder.Services.AddScoped<GetSnapshot>();
 
+builder.Services.AddScoped<ApplySyncOperations>();
+
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

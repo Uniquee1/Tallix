@@ -21,6 +21,7 @@ internal sealed class ContactConfiguration : IEntityTypeConfiguration<Contact>
         builder.Property(c => c.Notes).HasColumnName("notes").HasMaxLength(Contact.MaxNotesLength);
         builder.Property(c => c.CreatedAt).HasColumnName("created_at");
         builder.Property(c => c.UpdatedAt).HasColumnName("updated_at");
+        builder.Property(c => c.Version).HasColumnName("version").IsConcurrencyToken();
 
         builder.HasOne<User>()
             .WithMany()

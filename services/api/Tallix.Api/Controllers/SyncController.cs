@@ -12,10 +12,22 @@ namespace Tallix.Api.Controllers;
 public class SyncController : ControllerBase
 {
     private readonly GetSnapshot _getSnapshot;
+    private readonly ApplySyncOperations _applySyncOperations;
 
-    public SyncController(GetSnapshot getSnapshot)
+    public SyncController(GetSnapshot getSnapshot, ApplySyncOperations applySyncOperations)
     {
         _getSnapshot = getSnapshot;
+        _applySyncOperations = applySyncOperations;
+    }
+
+    /// <summary>Applies the phone's queued changes, in order, once each. Safe to send again.</summary>
+    [HttpPost("operations")]
+    [RequestSizeLimit(1_048_576)]
+    public async Task<ActionResult<SyncResponseDto>> Operations(
+        SyncRequestDto request,
+        CancellationToken cancellationToken)
+    {
+        return Ok(await _applySyncOperations.ExecuteAsync(request, cancellationToken));
     }
 
     /// <param name="after">The nextCursor from the previous page. Leave out for the first page.</param>
@@ -37,4 +49,6 @@ public class SyncController : ControllerBase
     {
         return Ok(await _getSnapshot.EntriesAsync(after, limit, cancellationToken));
     }
+
+    
 }
